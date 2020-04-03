@@ -54,9 +54,13 @@ export class App {
       if (data.time.yesterdayDate) {
         newData.collectSince = newData.sinceId
 
-        data.tweets = await _.uniqBy(data.tweets.concat(twitterData.tweets.yesterday), 'id')
+				data.tweets = await _.uniqBy(data.tweets.concat(twitterData.tweets.yesterday), 'id')
 
-        await new GithubHelper(this.config.GITHUB_TOKEN, this.config.GITHUB_CONFIG).run(data)
+				console.log('right before github helper')
+
+				await new GithubHelper(this.config.GITHUB_TOKEN, this.config.GITHUB_CONFIG).run(data)
+
+				console.log('right after github')
         // eslint-disable-next-line no-console
         console.log(`Updated Github repo with new dataset of ${data.tweets.length} for ${data.time.yesterdayDate}`)
         newData.lastUpdate = data.time.todayDate
