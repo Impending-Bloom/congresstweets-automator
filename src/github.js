@@ -6,23 +6,14 @@ import fetch from 'node-fetch'
 
 export default class GithubHelper {
 	checkValidity() {
-		if (!this.token) {
-			throw new Error('Missing Github auth token');
-		}
-		else if (!this.config) {
-			throw new Error('Missing Github user and repo');
-		}
-		else if (!this.config.owner) {
-			throw new Error('Missing Github user');
-		}
-		else if (!this.config.repo) {
-			throw new Error('Missing Github repo');
-		}
+		if (!this.token) throw new Error('Missing Github auth token');
+		else if (!this.config) throw new Error('Missing Github user and repo');
+		else if (!this.config.owner) throw new Error('Missing Github user');
+		else if (!this.config.repo) throw new Error('Missing Github repo');
 		return true;
 	}
 
 	async createBlobs(data, recursive) {
-		console.log('in createBlobs')
 		try {
 			await this.checkValidity();
 
@@ -74,30 +65,17 @@ export default class GithubHelper {
 	}
 
 	async getLatestCommitSha(opts = {}) {
-		console.log('in getLatestCommitSha')
-		console.log('config:', this.config)
-		console.log('ref:', 'heads/master')
 		try {
-			console.log('in getLatestCommitSha before check validity')
 			await this.checkValidity();
-			console.log('in getLatestCommitSha after check validity')
-			// const {data} = await this.client.repos.getShaOfCommitRef({
-			// 	...this.config,
-			// 	ref: 'heads/master',
-			// 	...opts,
-			// })
-			const data = await fetch(`https://api.github.com/repos/${this.config.owner}/${this.config.repo}/commits/heads/master`, {Authorization: process.env.GITHUB_TOKEN})
-			console.log('data', data)
-			return data.sha
+			const res = await fetch(`https://api.github.com/repos/${this.config.owner}/${this.config.repo}/commits/master`);
+			const { sha } = await res.json();
+			return sha
 		} catch (e) {
-			console.log('error in getLatestCommitSha')
 			return Promise.reject(e);
 		}
 	}
 
 	async getTree(time, sha, blobs) {
-		console.log('in getTree')
-
 		try {
 			await this.checkValidity();
 			const treeSha = (
@@ -115,11 +93,8 @@ export default class GithubHelper {
 	}
 
 	async createTree(tree) {
-		console.log('in createTree')
-
 		try {
 			await this.checkValidity();
-
 			return (
 				await this.client.gitdata.createTree({
 					...this.config,
@@ -132,11 +107,8 @@ export default class GithubHelper {
 	}
 
 	async createCommit(treeSha, time, prevCommitSha, message) {
-		console.log('in createCommit')
-
 		try {
 			await this.checkValidity();
-
 			const parents =
 				typeof prevCommitSha === 'object' ? prevCommitSha : [prevCommitSha];
 			return (
@@ -153,8 +125,6 @@ export default class GithubHelper {
 	}
 
 	async updateReference(sha) {
-		console.log('in updateReferences')
-
 		try {
 			await this.checkValidity();
 			return this.client.gitdata.updateReference({
@@ -169,18 +139,14 @@ export default class GithubHelper {
 	}
 
 	async run(data, options = {}) {
-		console.log('in run')
-
 		try {
 			const { recursive, message } = options;
-
 			await this.checkValidity();
 			this.client.authenticate({
 				type: 'oauth',
 				token: this.token,
 			});
 			const headSha = await this.getLatestCommitSha();
-
 			await this.createBlobs(data, recursive)
 				.then(blobs => this.getTree(data.time, headSha, blobs, recursive))
 				.then(tree => this.createTree(tree))
@@ -201,14 +167,13 @@ export default class GithubHelper {
 		if (!token || !config || !config.owner || !config.repo) {
 			throw new Error('Missing required props for Github client');
 		}
-
 		this.client = new GithubApi({
 			debug: false,
 			protocol: 'https',
 			host: 'api.github.com',
 			headers: {
 				'user-agent': 'TweetsOfCongressApp',
-				'Authorization': process.env.GITHUB_TOKEN,
+				'Authorization': this.token,
 			},
 			timeout: 5000,
 			promise: bluebird,
