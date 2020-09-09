@@ -1,0 +1,33 @@
+{
+  "name": "congresstweets-automator",
+  "version": "1.1.0",
+  "description": "A nodejs program that systematically aggregates tweets created by members of the U.S. Congress every week, and pushes the data to the Impending-Bloom database.",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Impending-Bloom/congresstweets-automator.git"
+  },
+  "author": "Impending-Bloom",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/Impending-Bloom/congresstweets-automator/issues"
+  },
+  "homepage": "https://github.com/Impending-Bloom/congresstweets-automator#readme",
+  "dependencies": {
+    "@google-cloud/bigquery": "^5.2.0",
+    "dotenv": "^8.2.0",
+    "express": "^4.17.1",
+    "moment": "^2.27.0",
+    "moment-timezone": "^0.5.31",
+    "twitter-api-client": "^0.2.0"
+  },
+  "devDependencies": {
+    "eslint": "^7.8.1",
+    "eslint-plugin-import": "^2.22.0",
+    "nodemon": "^2.0.4",
+    "supertest": "^4.0.2"
+  }
+}
