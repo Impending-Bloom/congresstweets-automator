@@ -12,6 +12,12 @@ export const TWITTER_CONFIG = {
   list_id: process.env.TWITTER_CONGRESS_MEMBER_LIST_ID,
 };
 
-export const GOOGLE_APPLICATION_CREDENTIALS = process.env.GOOGLE_APPLICATION_CREDENTIALS;
+export const GOOGLE_CONFIG = {
+  google_credentials: process.env.GOOGLE_APPLICATION_CREDENTIALS,
+  project_id: process.env.GCLOUD_PROJECT,
+  bq_dataset: process.env.BIGQUERY_TWEETS_DATASET,
+  bq_table: process.env.BIGQUERY_TWEETS_TABLE,
+}
+
 export const TIME_ZONE = process.env.TIME_ZONE || 'America/New_York';
 /* eslint-enable */
