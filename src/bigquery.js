@@ -1,5 +1,5 @@
 // Utility functions for accessing Big Query
-import GOOGLE_CONFIG from './config';
+import { GOOGLE_CONFIG } from './config';
 
 const { BigQuery } = require('@google-cloud/bigquery');
 const bq = new BigQuery();
@@ -7,7 +7,7 @@ const bq = new BigQuery();
 const dataset = bq.dataset(GOOGLE_CONFIG.bq_dataset);
 const tweetsTable = dataset.table(GOOGLE_CONFIG.bq_table);
 
-const getDataFromTable = (query, maxResults=1000) => {
+export const getDataFromTable = (query, maxResults=1000) => {
   const results = bq.query(query, { maxResults }, (err, rows) => {
     if (!err) return rows;
     console.error(err);
@@ -16,8 +16,13 @@ const getDataFromTable = (query, maxResults=1000) => {
   return results;
 }
 
-const postDataToTable = (data) => {
-  tweetsTable.insert(data, { ignoreUnknownValues: true }, insertHandler);
+export const postDataToTable = (data) => {
+  try {
+    tweetsTable.insert(data, { ignoreUnknownValues: true }, insertHandler);
+  }
+  catch(err) {
+    console.error(err);
+  }
 }
 
 
@@ -37,9 +42,10 @@ const insertHandler = (err, apiResponse) => {
       default:
         break;
     }
-    console.error(errorCount);
+    console.error(errorString);
   }
   else {
-    apiResponse.forEach(item => { console.log(item); })
+    apiResponse.forEach(item => { console.log(item); });
   }
+  return apiResponse;
 }
